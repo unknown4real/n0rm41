@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Red Teaming Portfolio</title>
+  <meta name="description" content="Portfolio styled as a terminal for Red Teaming & Cybersecurity" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --panel: #111;
+      --muted: #999;
+      --text: #e0e0e0;
+      --primary: #ff5555;
+      --accent: #ffb86c;
+      --ring: rgba(255,85,85,.6);
+      --shadow: 0 0 10px rgba(255,85,85,.15);
+      --radius: 4px;
+      --gap: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Fira Code', monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: var(--gap);
+    }
+
+    aside {
+      background: var(--panel);
+      padding: 20px;
+      border: 1px solid #222;
+      border-radius: var(--radius);
+    }
+    .avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #222;
+      display: grid; place-items: center;
+      font-size: 14px; color: var(--muted);
+      margin-bottom: 14px;
+    }
+    nav a {
+      display: block;
+      padding: 6px 0;
+      color: var(--text);
+    }
+    nav a:hover { color: var(--primary); }
+
+    main { display: grid; gap: var(--gap); }
+    .card {
+      background: var(--panel);
+      padding: 18px;
+      border: 1px solid #222;
+      border-radius: var(--radius);
+    }
+
+    h1, h2, h3 { color: var(--primary); margin-top: 0; }
+    .lead { color: var(--muted); }
+
+    .grid {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .project {
+      border: 1px solid #222;
+      padding: 12px;
+      background: #0f0f0f;
+      transition: border-color .2s;
+    }
+    .project:hover { border-color: var(--primary); }
+
+    .timeline {
+      border-left: 2px solid var(--primary);
+      padding-left: 16px;
+    }
+    .t-item { margin-bottom: 16px; }
+    .t-role { font-weight: 700; }
+    .t-time { color: var(--muted); font-size: 13px; }
+
+    .contact {
+      display: grid;
+      gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .contact a {
+      text-align: center;
+      padding: 8px;
+      background: #0f0f0f;
+      border: 1px solid #222;
+    }
+    .contact a:hover { border-color: var(--primary); }
+
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 20px 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside>
+      <div class="avatar">[ INSERT PHOTO/LOGO ]</div>
+      <h2>whoami</h2>
+      <div class="meta">[ Insert Role e.g. "Red Team Operator" ]</div>
+      <nav>
+        <a href="#whoami">whoami</a>
+        <a href="#toolbox">toolbox</a>
+        <a href="#operations">operations</a>
+        <a href="#experience">experience</a>
+        <a href="#contact">contact</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section class="card" id="whoami">
+        <h1>whoami</h1>
+        <p class="lead">[ Insert a short intro: e.g. Offensive security specialist with expertise in Red Team engagements, adversary emulation, and advanced attack simulations. ]</p>
+      </section>
+
+      <section class="card" id="toolbox">
+        <h2>toolbox</h2>
+        <p class="lead">[ Insert key tools, frameworks, and platforms you use: e.g. Cobalt Strike, Metasploit, Burp Suite, BloodHound, custom scripts. ]</p>
+      </section>
+
+      <section class="card" id="operations">
+        <h2>operations</h2>
+        <div class="grid">
+          <div class="project">
+            <h3>[ Insert Operation Name e.g. APT Simulation ]</h3>
+            <p class="lead">[ Describe: e.g. Full-scope attack simulation targeting critical infrastructure. ]</p>
+          </div>
+          <div class="project">
+            <h3>[ Insert Operation Name e.g. Phishing Campaign ]</h3>
+            <p class="lead">[ Describe: e.g. Controlled phishing engagements for security awareness training. ]</p>
+          </div>
+          <div class="project">
+            <h3>[ Insert Operation Name e.g. Internal Network Breach ]</h3>
+            <p class="lead">[ Describe: e.g. Simulated insider threat to assess lateral movement capabilities. ]</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="experience">
+        <h2>experience</h2>
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-role">[ Insert Role e.g. Senior Red Teamer ]</div>
+            <div class="t-time">[ YYYY → YYYY ]</div>
+            <p>[ Insert description of responsibilities and achievements. ]</p>
+          </div>
+          <div class="t-item">
+            <div class="t-role">[ Insert Role e.g. Penetration Tester ]</div>
+            <div class="t-time">[ YYYY → YYYY ]</div>
+            <p>[ Insert description of responsibilities and achievements. ]</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="contact">
+        <h2>contact</h2>
+        <div class="contact">
+          <a href="[ Insert Email URL ]">Email</a>
+          <a href="[ Insert GitHub URL ]">GitHub</a>
+          <a href="[ Insert LinkedIn URL ]">LinkedIn</a>
+          <a href="[ Insert PGP Key URL ]">PGP Key</a>
+        </div>
+      </section>
+
+      <footer>
+        © [ Insert Year ] [ Insert Name ] — Red Teaming Portfolio
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
