@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="red">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,191 +11,185 @@
   <meta property="og:type" content="website">
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0d0d0d;
-      --panel: #111;
-      --muted: #999;
-      --text: #e0e0e0;
-      --primary: #ff5555;
-      --accent: #ffb86c;
-      --ring: rgba(255,85,85,.6);
-      --shadow: 0 0 10px rgba(255,85,85,.15);
-      --radius: 4px;
-      --gap: 16px;
+    :root{
+      --bg:#0d0d0d;--panel:#111;--muted:#999;--text:#e0e0e0;
+      --primary:#ff5555;--accent:#ffb86c;--ring:rgba(255,85,85,.6);
+      --shadow:0 0 10px rgba(255,85,85,.15);--radius:4px;--gap:16px
+    }
+    /* Matrix green theme */
+    html[data-theme="green"]{
+      --primary:#00ff88;--accent:#a3ffbf;--ring:rgba(0,255,136,.6);
+      --shadow:0 0 10px rgba(0,255,136,.12)
     }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body {
-      font-family: 'Fira Code', monospace;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      overflow-x: hidden;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family:'Fira Code',monospace;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden;
+      position:relative;
     }
 
-    a { color: var(--primary); text-decoration: none; transition: color .2s; }
-    a:hover { text-decoration: underline; color: var(--accent); text-shadow: 0 0 5px var(--primary); }
-
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: var(--gap);
+    /* CRT + scanlines + subtle noise */
+    .crt-overlay, .noise-overlay{
+      pointer-events:none;position:fixed;inset:0;z-index:1
+    }
+    .crt-overlay{
+      background:linear-gradient(rgba(255,255,255,.03),rgba(0,0,0,0) 2px);
+      background-size:100% 3px;mix-blend-mode:overlay;opacity:.2
+    }
+    .noise-overlay{
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.035"/></svg>');
+      opacity:.25
     }
 
-    aside {
-      background: var(--panel);
-      padding: 20px;
-      border: 1px solid #222;
-      border-radius: var(--radius);
-      position: sticky;
-      top: 0;
-      height: fit-content;
-    }
-    .avatar {
-      width: 100%;
-      aspect-ratio: 1;
-      background: #222;
-      display: grid; place-items: center;
-      font-size: 14px; color: var(--muted);
-      margin-bottom: 14px;
-    }
-    nav a {
-      display: block;
-      padding: 6px 0;
-      color: var(--text);
-    }
-    nav a:hover { color: var(--primary); }
+    a{color:var(--primary);text-decoration:none;transition:color .2s, text-shadow .2s}
+    a:hover{text-decoration:underline;color:var(--accent);text-shadow:0 0 6px var(--primary)}
 
-    main { display: grid; gap: var(--gap); }
-    .card {
-      background: var(--panel);
-      padding: 18px;
-      border: 1px solid #222;
-      border-radius: var(--radius);
-      opacity: 0;
-      white-space: pre-wrap;
+    .wrap{
+      max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:260px 1fr;gap:var(--gap);position:relative;z-index:2
     }
 
-    h1, h2, h3 { color: var(--primary); margin-top: 0; }
-    .lead { color: var(--muted); }
-
-    .grid {
-      display: grid;
-      gap: var(--gap);
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    aside{
+      background:var(--panel);padding:20px;border:1px solid #222;border-radius:var(--radius);
+      position:sticky;top:10px;height:fit-content;box-shadow:var(--shadow)
     }
-
-    .project {
-      border: 1px solid #222;
-      padding: 12px;
-      background: #0f0f0f;
-      transition: border-color .2s, transform .2s;
+    .avatar{
+      width:100%;aspect-ratio:1;background:#222;display:grid;place-items:center;font-size:14px;color:var(--muted);
+      margin-bottom:14px;border:1px solid #333;cursor:pointer;transition:transform .15s, border-color .2s
     }
-    .project:hover { border-color: var(--primary); transform: scale(1.02); }
+    .avatar:hover{transform:scale(1.01);border-color:var(--primary)}
+    nav a{display:block;padding:6px 0;color:var(--text)}
+    nav a:hover{color:var(--primary)}
 
-    .timeline {
-      border-left: 2px solid var(--primary);
-      padding-left: 16px;
+    .toolbar{
+      display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap
     }
-    .t-item { margin-bottom: 16px; }
-    .t-role { font-weight: 700; }
-    .t-time { color: var(--muted); font-size: 13px; }
+    .btn{
+      border:1px solid #333;background:#0f0f0f;color:var(--text);padding:6px 10px;border-radius:4px;cursor:pointer;
+      transition:box-shadow .2s,border-color .2s
+    }
+    .btn:hover{border-color:var(--primary);box-shadow:0 0 6px var(--primary)}
+    .toggle{display:flex;align-items:center;gap:8px}
 
-    .contact {
-      display: grid;
-      gap: var(--gap);
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    }
-    .contact a {
-      text-align: center;
-      padding: 8px;
-      background: #0f0f0f;
-      border: 1px solid #222;
-      transition: all .2s;
-    }
-    .contact a:hover { border-color: var(--primary); box-shadow: 0 0 6px var(--primary); }
-
-    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 20px 0 10px; }
-
-    /* Toolbox styling */
-    ul.toolbox {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    ul.toolbox li::before {
-      content: "➤ ";
-      color: var(--accent);
+    main{display:grid;gap:var(--gap)}
+    .card{
+      background:var(--panel);padding:18px;border:1px solid #222;border-radius:var(--radius);
+      opacity:0;white-space:pre-wrap;box-shadow:var(--shadow)
     }
 
-    /* Responsive menu */
-    @media(max-width: 800px) {
-      .wrap {
-        grid-template-columns: 1fr;
-      }
-      aside {
-        position: relative;
-      }
+    h1,h2,h3{color:var(--primary);margin-top:0}
+    .lead{color:var(--muted)}
+    .grid{display:grid;gap:var(--gap);grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+    .project{border:1px solid #222;padding:12px;background:#0f0f0f;transition:border-color .2s,transform .2s}
+    .project:hover{border-color:var(--primary);transform:scale(1.02)}
+    .timeline{border-left:2px solid var(--primary);padding-left:16px}
+    .t-item{margin-bottom:16px}.t-role{font-weight:700}.t-time{color:var(--muted);font-size:13px}
+    .contact{display:grid;gap:var(--gap);grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+    .contact a{text-align:center;padding:8px;background:#0f0f0f;border:1px solid #222;transition:all .2s}
+    .contact a:hover{border-color:var(--primary);box-shadow:0 0 6px var(--primary)}
+    footer{text-align:center;color:var(--muted);font-size:13px;padding:20px 0 10px}
+
+    /* Toolbox list */
+    ul.toolbox{list-style:none;padding:0;margin:0}
+    ul.toolbox li::before{content:"➤ ";color:var(--accent)}
+
+    /* Responsive */
+    @media(max-width:800px){
+      .wrap{grid-template-columns:1fr}
+      aside{position:relative;top:0}
     }
 
-    /* Typing animation */
-    .cursor {
-      display: inline-block;
-      width: 8px;
-      background: var(--primary);
-      margin-left: 2px;
-      animation: blink 1s infinite;
+    /* Typing */
+    .cursor{display:inline-block;width:8px;background:var(--primary);margin-left:2px;animation:blink 1s infinite}
+    @keyframes blink{50%{background:transparent}}
+
+    /* ASCII modal */
+    .modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:10
     }
-    @keyframes blink {
-      50% { background: transparent; }
+    .modal-content{
+      background:#0f0f0f;border:1px solid #333;max-width:90vw;max-height:80vh;overflow:auto;padding:16px;border-radius:6px;
+      box-shadow:0 0 12px var(--ring);white-space:pre;line-height:1.1
     }
+    .modal .close{position:absolute;top:12px;right:12px}
+    .kbd{border:1px solid #333;padding:2px 6px;border-radius:4px;background:#0f0f0f}
+
+    /* Feeds & blog */
+    .feed{display:grid;gap:12px}
+    .repo{
+      border:1px solid #222;background:#0f0f0f;padding:12px;border-radius:6px;transition:border-color .2s
+    }
+    .repo:hover{border-color:var(--primary)}
+    .meta-row{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+
+    /* Badges */
+    .badges{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .badges img{max-height:60px;border:1px solid #222;background:#0f0f0f;padding:6px;border-radius:6px}
+
   </style>
 </head>
 <body>
+  <!-- visual layers -->
+  <div class="crt-overlay"></div>
+  <div class="noise-overlay"></div>
+
   <div class="wrap">
     <aside>
-      <div class="avatar">[ INSERT PHOTO/LOGO ]</div>
+      <div class="avatar" id="openAscii">[ INSERT PHOTO/LOGO ]</div>
       <h2>n0rm41</h2><br>
       <div class="meta">📍 Location: Somewhere</div>
       <div class="meta">🎓 Role: Student</div>
+
       <nav>
         <a href="#whoami">whoami</a>
         <a href="#toolbox">toolbox</a>
         <a href="#operations">operations</a>
         <a href="#experience">experience</a>
+        <a href="#github">github</a>
+        <a href="#blog">blog</a>
+        <a href="#badges">badges</a>
         <a href="#contact">contact</a>
       </nav>
+
+      <div class="toolbar">
+        <button class="btn" id="playBeep">Beep</button>
+        <label class="toggle">
+          <input type="checkbox" id="themeToggle">
+          <span>Matrix theme</span>
+        </label>
+        <button class="btn" id="replayTyping" title="Riesegui animazione">Replay typing</button>
+      </div>
     </aside>
 
     <main>
-      <section class="card" id="whoami" data-text="> whoami
+      <!-- TYPED SECTIONS (contenuti originali preservati) -->
+      <section class="card" id="whoami"
+        data-text="> whoami
 Hello there!,
-I'm n0rm41 and I'm a student who likes red teaming in the development field (i.e malware development, vulnerability research, reverse engineering etc!)
-Right now I'm not an expert nor a newbie, I try my best to improve everyday.
-I hope we might get in contact!">
+Im n0rm41 and im a student who likes red teaming in the development field(i.e malware development, vulnerability research, reverse engineering etc!)
+Right now im not an expert nor a newbie, i try my best to improve everyday.
+I Hope we might get in contact !">
       </section>
 
-      <section class="card" id="toolbox" data-text="> toolbox
-Here the tools etc I use:
+      <section class="card" id="toolbox"
+        data-text="> toolbox
+Here the tools etc i use:
 - Metasploit
 - Burp Suite
-- Wireshark / StratoShark
-- VScode / Visual Studio
+- Wireshark, StratoShark
+- VScode, Visual Studio
 - Obsidian
-- Virtual Machines
+- VM's
 - dnSpy, PE-bear
 - Tor, HxD
-- Ida, Ghidra, x64Dbg
+- Ida, Ghidra, x64Dbg(also other versions)
 I often build my own scripts for specific objectives.">
       </section>
 
-      <section class="card" id="operations" data-text="> operations
+      <section class="card" id="operations"
+        data-text="> operations
 [Trace Labs]
-OSINT based CTF, where the players are divided in teams to find actually lost persons to help the authorities.
+This was a OSINT based CTF, where the players are divided in teams to find actully lost persons to help the authorities to find them.
 
 [ Phishing Campaign ]
 Controlled phishing engagements for security awareness training.
@@ -204,52 +198,266 @@ Controlled phishing engagements for security awareness training.
 Simulated insider threat to assess lateral movement capabilities.">
       </section>
 
-      <section class="card" id="experience" data-text="> experience
-[ Penetration Tester Trainee ]  2023 → 2024
-Hands-on practice: labs, HackTheBox, TryHackMe, OSINT CTFs.
+      <section class="card" id="experience"
+        data-text="> experience
+[ Insert Role e.g. Senior Red Teamer ]   [ YYYY → YYYY ]
+[ Insert description of responsibilities and achievements. ]
 
-[ Student Researcher ]  2024 → Present
-Exploring malware development, reverse engineering, vulnerability research.">
+[ Insert Role e.g. Penetration Tester ]   [ YYYY → YYYY ]
+[ Insert description of responsibilities and achievements. ]">
       </section>
 
-      <section class="card" id="contact" data-text="> contact
-[ Email ] → mailto:yourmail@example.com
+      <!-- LIVE GITHUB FEED -->
+      <section class="card" id="github"
+        data-text="> github feed
+Fetching latest repositories from: https://github.com/unknown4real
+(Automatically shows most recently updated public repos)">
+      </section>
+      <section class="card" id="github-feed">
+        <h2>latest repos</h2>
+        <div class="feed" id="repoList">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- MINI BLOG -->
+      <section class="card" id="blog"
+        data-text="> blog
+A small corner for notes and experiments. (You can add more posts in the JS array)">
+      </section>
+      <section class="card" id="blog-posts">
+        <div id="posts">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- BADGES -->
+      <section class="card" id="badges"
+        data-text="> badges
+Showcasing progress from platforms. Configure your handles to display badges.">
+      </section>
+      <section class="card" id="badge-row"
+        data-thm=""  <!-- Inserisci qui il tuo handle TryHackMe es: data-thm="n0rm41" -->
+        data-htb=""  <!-- Inserisci qui il tuo ID numerico HackTheBox es: data-htb="123456" -->
+      >
+        <div class="badges" id="badgesWrap">
+          <!-- badges by JS -->
+        </div>
+        <div class="lead" id="badgeHint">Coming soon — add your handles to show badges.</div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="card" id="contact"
+        data-text="> contact
+[ Email ] → [ Insert Email URL ]
 [ Github ] → https://github.com/unknown4real
-[ Linkedin ] → Coming soon
-[ PGP Key ] → None right now">
+[ Linkedin ] → Linkedin(i dont have it yet)
+[ PGP Key ] → PGP Key(None right now)">
       </section>
 
-      <footer>
-        © 2025 [n0rm41] — Portfolio
-      </footer>
+      <footer>© 2025 [n0rm41] — Portfolio</footer>
     </main>
   </div>
 
+  <!-- ASCII Modal -->
+  <div class="modal" id="asciiModal" aria-hidden="true">
+    <button class="btn close" id="closeAscii">Close</button>
+    <pre class="modal-content" id="asciiArt">
+      _   _  ____  ____  __  __ _  _  _  _
+     | \ | |/ __ \|  _ \|  \/  | || || || |
+     |  \| | |  | | |_) | \  / | || || || |_
+     | . ` | |  | |  _ <| |\/| | ||_||__   _|
+     | |\  | |__| | |_) | |  | | |__   | |  
+     |_| \_|\____/|____/|_|  |_|____|  |_|  
+
+     n0rm41 — Red Teaming & Cybersecurity
+     click the logo again to toggle this modal
+    </pre>
+  </div>
+
   <script>
-    // Typing animation for each card
-    function typeWriter(el, text, i = 0, speed = 20) {
+    // ---------- Typing animation ----------
+    function typeWriter(el, text, i = 0, speed = 18, done) {
       if (i < text.length) {
         el.innerHTML = text.substring(0, i+1) + '<span class="cursor"></span>';
-        setTimeout(() => typeWriter(el, text, i+1, speed), speed);
+        setTimeout(() => typeWriter(el, text, i+1, speed, done), speed);
       } else {
-        el.innerHTML = text; // remove cursor at end
+        el.innerHTML = text;
+        if (done) done();
+      }
+    }
+    function runTypingSequence() {
+      const cards = Array.from(document.querySelectorAll(".card"))
+        .filter(c => c.hasAttribute("data-text"));
+      let delay = 0;
+      cards.forEach((card, idx) => {
+        const text = card.getAttribute("data-text") || "";
+        setTimeout(() => {
+          card.style.opacity = 1;
+          typeWriter(card, text, 0, 18, () => {});
+        }, delay);
+        delay += Math.max(800, text.length * 18 + 600);
+      });
+    }
+
+    // ---------- Theme toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('change', () => {
+      document.documentElement.setAttribute('data-theme', themeToggle.checked ? 'green' : 'red');
+      localStorage.setItem('theme', themeToggle.checked ? 'green' : 'red');
+    });
+    // restore theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      themeToggle.checked = savedTheme === 'green';
+    }
+
+    // ---------- Beep (tiny audio cue) ----------
+    document.getElementById('playBeep').addEventListener('click', () => {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'square'; o.frequency.value = 850;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+      o.start();
+      setTimeout(()=>{ g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05); o.stop(ctx.currentTime + 0.06); }, 60);
+    });
+
+    // ---------- Replay typing ----------
+    document.getElementById('replayTyping').addEventListener('click', () => {
+      document.querySelectorAll(".card[data-text]").forEach(c => c.style.opacity = 0);
+      setTimeout(runTypingSequence, 120);
+    });
+
+    // ---------- ASCII Modal ----------
+    const modal = document.getElementById('asciiModal');
+    const openAscii = document.getElementById('openAscii');
+    const closeAscii = document.getElementById('closeAscii');
+    function toggleModal(show){
+      modal.style.display = show ? 'flex' : 'none';
+      modal.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+    openAscii.addEventListener('click', ()=>toggleModal(true));
+    closeAscii.addEventListener('click', ()=>toggleModal(false));
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) toggleModal(false); });
+
+    // ---------- Live GitHub Feed ----------
+    async function loadRepos(username="unknown4real") {
+      const list = document.getElementById('repoList');
+      list.innerHTML = "loading...";
+      try {
+        const res = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`);
+        if (!res.ok) throw new Error('GitHub API error');
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length===0){
+          list.innerHTML = "No public repositories found.";
+          return;
+        }
+        list.innerHTML = "";
+        data.sort((a,b)=> new Date(b.pushed_at) - new Date(a.pushed_at));
+        data.slice(0,6).forEach(r=>{
+          const div = document.createElement('div');
+          div.className = 'repo';
+          const stars = r.stargazers_count ?? 0;
+          const lang = r.language ?? 'n/a';
+          const updated = new Date(r.pushed_at).toISOString().split('T')[0];
+          div.innerHTML = `
+            <div><strong><a href="${r.html_url}" target="_blank" rel="noopener">${r.name}</a></strong></div>
+            <div class="lead">${r.description ?? ''}</div>
+            <div class="meta-row">
+              <span>★ ${stars}</span>
+              <span>lang: ${lang}</span>
+              <span>updated: ${updated}</span>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      } catch (e) {
+        list.innerHTML = "Failed to load GitHub feed (maybe rate limit or network).";
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const cards = document.querySelectorAll(".card");
-      let delay = 0;
-      cards.forEach((card) => {
-        const text = card.getAttribute("data-text");
-        setTimeout(() => {
-          card.style.opacity = 1;
-          typeWriter(card, text);
-        }, delay);
-        delay += text.length * 20 + 800; // wait for typing to finish before next
-      });
+    // ---------- Blog (local mini-posts) ----------
+    const BLOG_POSTS = [
+      {
+        title: "Reverse Engineering diary #1",
+        date: "2025-03-10",
+        tags: ["RE","malware-lab"],
+        body: `Notes from a small x64 unpacking exercise. Focus: import resolution, section entropy, IAT reconstruction. Key tools: x64Dbg, PE-bear, Scylla.`
+      },
+      {
+        title: "Red Team micro-lab: phishing pretext",
+        date: "2025-04-22",
+        tags: ["red-team","ops"],
+        body: `Built a safe internal pretext for awareness training. Outcome: 23% click rate → used to improve training materials.`
+      },
+      {
+        title: "Ghidra tips for beginners",
+        date: "2025-06-17",
+        tags: ["ghidra","tips"],
+        body: `Use Function Graph + Decompiler sync; rename aggressively; leverage Data Type Manager for structs; don't forget Script Manager for batch tasks.`
+      }
+    ];
+    function renderBlog(){
+      const wrap = document.getElementById('posts');
+      wrap.innerHTML = "";
+      BLOG_POSTS
+        .sort((a,b)=> new Date(b.date) - new Date(a.date))
+        .forEach(p=>{
+          const el = document.createElement('article');
+          el.className = 'project';
+          el.innerHTML = `
+            <h3>${p.title}</h3>
+            <div class="meta-row"><span>${p.date}</span><span>#${p.tags.join(' #')}</span></div>
+            <p class="lead">${p.body}</p>
+          `;
+          wrap.appendChild(el);
+        });
+    }
 
-      console.log("%cWelcome to n0rm41's terminal","color:#ff5555;font-size:14px;font-family:monospace;");
-      console.log("%cStay curious. Keep hacking ⚡","color:#ffb86c;font-size:12px;font-family:monospace;");
+    // ---------- Badges (TryHackMe / HackTheBox) ----------
+    function renderBadges(){
+      const cont = document.getElementById('badge-row');
+      const thm = cont.getAttribute('data-thm')?.trim();
+      const htb = cont.getAttribute('data-htb')?.trim();
+      const wrap = document.getElementById('badgesWrap');
+      const hint = document.getElementById('badgeHint');
+      wrap.innerHTML = "";
+      let shown = 0;
+
+      if (thm){
+        // TryHackMe public badge image
+        const img = document.createElement('img');
+        img.alt = "TryHackMe badge";
+        img.loading = "lazy";
+        img.src = `https://tryhackme-badges.s3.amazonaws.com/${encodeURIComponent(thm)}.png`;
+        wrap.appendChild(img);
+        shown++;
+      }
+      if (htb){
+        // HackTheBox badge (requires numeric ID)
+        const img = document.createElement('img');
+        img.alt = "HackTheBox badge";
+        img.loading = "lazy";
+        img.src = `https://www.hackthebox.com/badge/image/${encodeURIComponent(htb)}`;
+        wrap.appendChild(img);
+        shown++;
+      }
+      hint.style.display = shown ? "none" : "block";
+    }
+
+    // ---------- Console easter eggs ----------
+    console.log("%cWelcome to n0rm41's terminal","color:var(--primary);font-size:14px;font-family:monospace;");
+    console.log("%cTry typing 'ascii' by clicking the logo 😉","color:var(--accent);font-size:12px;font-family:monospace;");
+
+    // ---------- Init ----------
+    document.addEventListener("DOMContentLoaded", () => {
+      runTypingSequence();
+      loadRepos("unknown4real");
+      renderBlog();
+      renderBadges();
     });
   </script>
 </body>
