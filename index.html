@@ -114,18 +114,68 @@
     .modal .close{position:absolute;top:12px;right:12px}
     .kbd{border:1px solid #333;padding:2px 6px;border-radius:4px;background:#0f0f0f}
 
-    /* Feeds & blog */
-    .feed{display:grid;gap:12px}
-    .repo{
-      border:1px solid #222;background:#0f0f0f;padding:12px;border-radius:6px;transition:border-color .2s
+    /* BLOG STYLES */
+    .blog-list {
+      display: grid;
+      gap: 20px;
+      padding: 10px;
     }
-    .repo:hover{border-color:var(--primary)}
-    .meta-row{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
 
-    /* Badges */
-    .badges{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .badges img{max-height:60px;border:1px solid #222;background:#0f0f0f;padding:6px;border-radius:6px}
+    .blog-post {
+      background: #0f0f0f;
+      border: 1px solid #222;
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
 
+    .blog-post:hover {
+      border-color: var(--primary);
+      border-left-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .blog-post h3 {
+      margin: 0 0 6px;
+      color: var(--primary);
+    }
+
+    .blog-post .meta-row {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .blog-post .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .blog-post .tag {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    .blog-post p {
+      margin: 0;
+      color: var(--text);
+      line-height: 1.4;
+      display: none;
+    }
+
+    .blog-post.expanded p {
+      display: block;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -162,7 +212,7 @@
     </aside>
 
     <main>
-      <!-- TYPED SECTIONS (contenuti originali preservati) -->
+      <!-- TYPED SECTIONS -->
       <section class="card" id="whoami"
         data-text="> whoami
 Hello there!,
@@ -207,15 +257,13 @@ Simulated insider threat to assess lateral movement capabilities.">
 [ Insert description of responsibilities and achievements. ]">
       </section>
 
-      <!-- MINI BLOG -->
+      <!-- BLOG -->
       <section class="card" id="blog"
         data-text="> blog
-A small corner for notes and experiments. (You can add more posts in the JS array)">
+Welcome to my notes & experiments corner.">
       </section>
-      <section class="card" id="blog-posts">
-        <div id="posts">
-          <!-- populated by JS -->
-        </div>
+      <section class="card blog-list" id="blog-posts">
+        <div id="posts"></div>
       </section>
 
       <!-- CONTACT -->
@@ -278,14 +326,13 @@ A small corner for notes and experiments. (You can add more posts in the JS arra
       document.documentElement.setAttribute('data-theme', themeToggle.checked ? 'green' : 'red');
       localStorage.setItem('theme', themeToggle.checked ? 'green' : 'red');
     });
-    // restore theme
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
       themeToggle.checked = savedTheme === 'green';
     }
 
-    // ---------- Beep (tiny audio cue) ----------
+    // ---------- Beep ----------
     document.getElementById('playBeep').addEventListener('click', () => {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const o = ctx.createOscillator(); const g = ctx.createGain();
@@ -315,43 +362,7 @@ A small corner for notes and experiments. (You can add more posts in the JS arra
     closeAscii.addEventListener('click', ()=>toggleModal(false));
     modal.addEventListener('click', (e)=>{ if(e.target===modal) toggleModal(false); });
 
-    // ---------- Live GitHub Feed ----------
-    async function loadRepos(username="unknown4real") {
-      const list = document.getElementById('repoList');
-      list.innerHTML = "loading...";
-      try {
-        const res = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`);
-        if (!res.ok) throw new Error('GitHub API error');
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length===0){
-          list.innerHTML = "No public repositories found.";
-          return;
-        }
-        list.innerHTML = "";
-        data.sort((a,b)=> new Date(b.pushed_at) - new Date(a.pushed_at));
-        data.slice(0,6).forEach(r=>{
-          const div = document.createElement('div');
-          div.className = 'repo';
-          const stars = r.stargazers_count ?? 0;
-          const lang = r.language ?? 'n/a';
-          const updated = new Date(r.pushed_at).toISOString().split('T')[0];
-          div.innerHTML = `
-            <div><strong><a href="${r.html_url}" target="_blank" rel="noopener">${r.name}</a></strong></div>
-            <div class="lead">${r.description ?? ''}</div>
-            <div class="meta-row">
-              <span>★ ${stars}</span>
-              <span>lang: ${lang}</span>
-              <span>updated: ${updated}</span>
-            </div>
-          `;
-          list.appendChild(div);
-        });
-      } catch (e) {
-        list.innerHTML = "Failed to load GitHub feed (maybe rate limit or network).";
-      }
-    }
-
-    // ---------- Blog (local mini-posts) ----------
+    // ---------- Blog posts ----------
     const BLOG_POSTS = [
       {
         title: "Reverse Engineering diary #1",
@@ -379,45 +390,18 @@ A small corner for notes and experiments. (You can add more posts in the JS arra
         .sort((a,b)=> new Date(b.date) - new Date(a.date))
         .forEach(p=>{
           const el = document.createElement('article');
-          el.className = 'project';
+          el.className = 'blog-post';
           el.innerHTML = `
             <h3>${p.title}</h3>
-            <div class="meta-row"><span>${p.date}</span><span>#${p.tags.join(' #')}</span></div>
-            <p class="lead">${p.body}</p>
+            <div class="meta-row">${p.date}</div>
+            <div class="tags">
+              ${p.tags.map(t=>`<span class="tag">#${t}</span>`).join(' ')}
+            </div>
+            <p>${p.body}</p>
           `;
+          el.addEventListener('click', ()=> el.classList.toggle('expanded'));
           wrap.appendChild(el);
         });
-    }
-
-    // ---------- Badges (TryHackMe / HackTheBox) ----------
-    function renderBadges(){
-      const cont = document.getElementById('badge-row');
-      const thm = cont.getAttribute('data-thm')?.trim();
-      const htb = cont.getAttribute('data-htb')?.trim();
-      const wrap = document.getElementById('badgesWrap');
-      const hint = document.getElementById('badgeHint');
-      wrap.innerHTML = "";
-      let shown = 0;
-
-      if (thm){
-        // TryHackMe public badge image
-        const img = document.createElement('img');
-        img.alt = "TryHackMe badge";
-        img.loading = "lazy";
-        img.src = `https://tryhackme-badges.s3.amazonaws.com/${encodeURIComponent(thm)}.png`;
-        wrap.appendChild(img);
-        shown++;
-      }
-      if (htb){
-        // HackTheBox badge (requires numeric ID)
-        const img = document.createElement('img');
-        img.alt = "HackTheBox badge";
-        img.loading = "lazy";
-        img.src = `https://www.hackthebox.com/badge/image/${encodeURIComponent(htb)}`;
-        wrap.appendChild(img);
-        shown++;
-      }
-      hint.style.display = shown ? "none" : "block";
     }
 
     // ---------- Console easter eggs ----------
@@ -427,9 +411,7 @@ A small corner for notes and experiments. (You can add more posts in the JS arra
     // ---------- Init ----------
     document.addEventListener("DOMContentLoaded", () => {
       runTypingSequence();
-      loadRepos("unknown4real");
       renderBlog();
-      renderBadges();
     });
   </script>
 </body>
